@@ -34,15 +34,14 @@ function draw() {
   if (isLoaded) {
     let vWidth = width * 0.6;
     let vHeight = height * 0.6;
-    // 將擷取的影像繪製在畫布中心
-
-    // 修正左右顛倒問題：將畫布原點移動到影像中心，水平翻轉，再繪製影像
+    
+    // 修正左右顛倒問題：使用鏡像翻轉
     push();
-    translate((width - vWidth) / 2 + vWidth / 2, (height - vHeight) / 2 + vHeight / 2); // 移動到影像中心
-    scale(-1, 1); // 水平翻轉
-    image(capture, -vWidth / 2, -vHeight / 2, vWidth, vHeight); // 繪製影像，使其中心對齊新的原點
+    // 先將原點移至影像預計顯示區域的右側邊界，然後水平縮放為 -1
+    translate((width + vWidth) / 2, (height - vHeight) / 2);
+    scale(-1, 1);
+    image(capture, 0, 0, vWidth, vHeight);
     pop();
-
   } else {
     // 提示使用者點擊畫面或檢查環境
     textAlign(CENTER, CENTER);
