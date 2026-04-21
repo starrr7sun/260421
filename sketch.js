@@ -12,8 +12,6 @@ function setup() {
     audio: false
   }, function() {
     isLoaded = true;
-    // 產生一個與視訊畫面解析度一致的畫布緩衝區 (Off-screen Graphics)
-    pg = createGraphics(capture.width, capture.height);
   });
   
   capture.elt.setAttribute('playsinline', '');
@@ -45,11 +43,16 @@ function draw() {
     scale(-1, 1); // 水平縮放 -1 倍，達成鏡像翻轉
     image(capture, -vWidth / 2, -vHeight / 2, vWidth, vHeight);
 
+    // 確保 pg 已建立且尺寸正確 (解決攝影機初始化時寬高可能為 0 的問題)
+    if (!pg && capture.width > 1) {
+      pg = createGraphics(capture.width, capture.height);
+    }
+
     // 如果 pg 已建立，則在 pg 上繪圖並顯示在視訊上方
     if (pg) {
       pg.clear(); // 清除背景，使 pg 保持透明
       
-      // 產生新泡泡
+      // 產生新泡泡 (調整頻率)
       if (frameCount % 10 === 0 && bubbles.length < 30) {
         bubbles.push({ x: random(pg.width), y: pg.height + 20, r: random(10, 40), speed: random(1, 3) });
       }
@@ -59,14 +62,14 @@ function draw() {
         let b = bubbles[i];
         b.y -= b.speed; // 向上漂浮
         
-        pg.stroke(255, 200); // 白色邊框
+        pg.stroke(255, 255, 255, 200); // 白色邊框
         pg.strokeWeight(2);
         pg.noFill();
         pg.circle(b.x, b.y, b.r);
         
         pg.noStroke();
-        pg.fill(255, 150); // 加入反光點
-        pg.circle(b.x - b.r * 0.2, b.y - b.r * 0.2, b.r * 0.2);
+        pg.fill(255, 255, 255, 180); // 加入反光點
+        pg.circle(b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.3);
 
         // 移除超出畫面的泡泡
         if (b.y < -50) bubbles.splice(i, 1);
