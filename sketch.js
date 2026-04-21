@@ -1,5 +1,4 @@
 let capture;
-let pg;
 let isLoaded = false;
 let bubbles = [];
 
@@ -41,42 +40,37 @@ function draw() {
     push();
     translate(width / 2, height / 2); // 將座標原點移至畫布中心
     scale(-1, 1); // 水平縮放 -1 倍，達成鏡像翻轉
+    
+    // 1. 繪製視訊影像
     image(capture, -vWidth / 2, -vHeight / 2, vWidth, vHeight);
 
-    // 確保 pg 已建立且尺寸正確 (解決攝影機初始化時寬高可能為 0 的問題)
-    if (!pg && capture.width > 1) {
-      pg = createGraphics(capture.width, capture.height);
+    // 2. 直接在視訊畫面上方繪製泡泡效果
+    // 產生新泡泡
+    if (frameCount % 10 === 0 && bubbles.length < 30) {
+      bubbles.push({ 
+        x: random(-vWidth / 2, vWidth / 2), 
+        y: vHeight / 2 + 20, 
+        r: random(10, 40), 
+        speed: random(1, 3) 
+      });
     }
 
-    // 如果 pg 已建立，則在 pg 上繪圖並顯示在視訊上方
-    if (pg) {
-      pg.clear(); // 清除背景，使 pg 保持透明
+    // 更新並繪製泡泡
+    for (let i = bubbles.length - 1; i >= 0; i--) {
+      let b = bubbles[i];
+      b.y -= b.speed; // 向上漂浮
       
-      // 產生新泡泡 (調整頻率)
-      if (frameCount % 10 === 0 && bubbles.length < 30) {
-        bubbles.push({ x: random(pg.width), y: pg.height + 20, r: random(10, 40), speed: random(1, 3) });
-      }
-
-      // 更新並繪製泡泡
-      for (let i = bubbles.length - 1; i >= 0; i--) {
-        let b = bubbles[i];
-        b.y -= b.speed; // 向上漂浮
-        
-        pg.stroke(255, 255, 255, 200); // 白色邊框
-        pg.strokeWeight(2);
-        pg.noFill();
-        pg.circle(b.x, b.y, b.r);
-        
-        pg.noStroke();
-        pg.fill(255, 255, 255, 180); // 加入反光點
-        pg.circle(b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.3);
-
-        // 移除超出畫面的泡泡
-        if (b.y < -50) bubbles.splice(i, 1);
-      }
+      stroke(255, 255, 255, 200);
+      strokeWeight(2);
+      noFill();
+      circle(b.x, b.y, b.r);
       
-      // 將繪圖層 (pg) 繪製在視訊影像之上，使用相同的座標與縮放比例
-      image(pg, -vWidth / 2, -vHeight / 2, vWidth, vHeight);
+      noStroke();
+      fill(255, 255, 255, 180);
+      circle(b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.3);
+
+      // 移除超出視訊畫面的泡泡
+      if (b.y < -vHeight / 2 - 50) bubbles.splice(i, 1);
     }
     pop();
   } else {
