@@ -132,13 +132,23 @@ function draw() {
     }
     pop();
 
-    // 3. 在右上角顯示一個即時彩色小預覽
-    // 這能讓使用者在看到馬賽克特效的同時，也能預覽真實的拍照構圖與光線
+    // 3. 右上角即時彩色小預覽視窗 (修正：增加寬高檢查與外框)
     let pw = 160; // 預覽視窗寬度
-    let ph = (pw * capture.height) / capture.width; // 依比例計算高度
+    // 防止 capture.width 為 0 導致計算出 NaN
+    let ph = (capture.width > 0) ? (pw * capture.height) / capture.width : pw * 0.75; 
+    
     push();
-    // 將預覽視窗放在右上角，並同步水平鏡像翻轉
-    translate(width - 20, 20);
+    // 移至右上角 (保留 20 像素邊距)
+    translate(width - pw - 20, 20);
+    
+    // 繪製預覽視窗的外框與背景，確保在影像載入前也能看到位置
+    stroke(255);
+    strokeWeight(2);
+    fill(0, 50); // 半透明深色背景
+    rect(-1, -1, pw + 2, ph + 2);
+
+    // 實作水平鏡像翻轉
+    translate(pw, 0); 
     scale(-1, 1);
     image(capture, 0, 0, pw, ph);
     pop();
