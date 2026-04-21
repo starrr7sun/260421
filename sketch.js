@@ -1,6 +1,7 @@
 let capture;
 let pg;
 let isLoaded = false;
+let bubbles = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -42,25 +43,40 @@ function draw() {
     push();
     translate(width / 2, height / 2); // 將座標原點移至畫布中心
     scale(-1, 1); // 水平縮放 -1 倍，達成鏡像翻轉
-    image(capture, -vWidth / 2, -vHeight / 2, vWidth, vHeight); 
+    image(capture, -vWidth / 2, -vHeight / 2, vWidth, vHeight);
 
     // 如果 pg 已建立，則在 pg 上繪圖並顯示在視訊上方
     if (pg) {
       pg.clear(); // 清除背景，使 pg 保持透明
-      pg.fill(255, 255, 0, 180); // 設定為半透明黃色
-      pg.noStroke();
-      // 在 pg 的中心畫一個圓，這會對應到視訊的正中央
-      pg.ellipse(pg.width / 2, pg.height / 2, 50, 50);
+      
+      // 產生新泡泡
+      if (frameCount % 10 === 0 && bubbles.length < 30) {
+        bubbles.push({ x: random(pg.width), y: pg.height + 20, r: random(10, 40), speed: random(1, 3) });
+      }
+
+      // 更新並繪製泡泡
+      for (let i = bubbles.length - 1; i >= 0; i--) {
+        let b = bubbles[i];
+        b.y -= b.speed; // 向上漂浮
+        
+        pg.stroke(255, 200); // 白色邊框
+        pg.strokeWeight(2);
+        pg.noFill();
+        pg.circle(b.x, b.y, b.r);
+        
+        pg.noStroke();
+        pg.fill(255, 150); // 加入反光點
+        pg.circle(b.x - b.r * 0.2, b.y - b.r * 0.2, b.r * 0.2);
+
+        // 移除超出畫面的泡泡
+        if (b.y < -50) bubbles.splice(i, 1);
+      }
       
       // 將繪圖層 (pg) 繪製在視訊影像之上，使用相同的座標與縮放比例
       image(pg, -vWidth / 2, -vHeight / 2, vWidth, vHeight);
     }
     pop();
   } else {
-    // 提示使用者點擊畫面或檢查環境
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    fill(100);
-    text("正在啟動攝影機...\n若無畫面請確認使用 HTTPS 連線\n並點擊畫面一下", width / 2, height / 2);
+    // 已移除提示文字
   }
 }
