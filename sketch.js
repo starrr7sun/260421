@@ -40,9 +40,29 @@ function draw() {
     push();
     translate(width / 2, height / 2); // 將座標原點移至畫布中心
     scale(-1, 1); // 水平縮放 -1 倍，達成鏡像翻轉
-    
-    // 1. 繪製視訊影像
-    image(capture, -vWidth / 2, -vHeight / 2, vWidth, vHeight);
+
+    // 1. 繪製馬賽克黑白視訊影像
+    capture.loadPixels();
+    let unitSize = 20; // 定義馬賽克單位大小
+    if (capture.pixels.length > 0) {
+      for (let y = 0; y < vHeight; y += unitSize) {
+        for (let x = 0; x < vWidth; x += unitSize) {
+          // 將目前畫布上的座標映射回視訊原始像素座標
+          let sx = floor(map(x, 0, vWidth, 0, capture.width));
+          let sy = floor(map(y, 0, vHeight, 0, capture.height));
+          let i = (sx + sy * capture.width) * 4;
+
+          let r = capture.pixels[i];
+          let g = capture.pixels[i + 1];
+          let b = capture.pixels[i + 2];
+          let gray = (r + g + b) / 3; // 依照要求計算平均值作為黑白顏色值
+
+          fill(gray);
+          noStroke();
+          rect(x - vWidth / 2, y - vHeight / 2, unitSize, unitSize);
+        }
+      }
+    }
 
     // 2. 直接在視訊畫面上方繪製泡泡效果
     // 產生新泡泡
