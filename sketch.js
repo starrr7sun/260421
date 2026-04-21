@@ -19,7 +19,7 @@ function setup() {
   capture.hide();
 
   // 建立相機快門鍵按鈕
-  shutterBtn = createButton('');
+  shutterBtn = createButton('📷');
   shutterBtn.mousePressed(takePhoto);
   styleButton();
 }
@@ -34,14 +34,18 @@ function styleButton() {
 
   shutterBtn.position(x, y);
   shutterBtn.size(btnSize, btnSize);
-  // 設定快門鍵外觀：白色圓形、灰色粗邊框
+  
+  // 強制設定 CSS 樣式確保顯示在最上層
   shutterBtn.style('display', 'block');
-  shutterBtn.style('z-index', '9999'); // 強制顯示在最上層
+  shutterBtn.style('position', 'absolute');
+  shutterBtn.style('z-index', '10000'); 
   shutterBtn.style('background-color', 'white');
-  shutterBtn.style('border', '8px solid rgba(200, 200, 200, 0.6)');
+  shutterBtn.style('border', '5px solid #555'); // 加深邊框顏色增加辨識度
   shutterBtn.style('border-radius', '50%');
+  shutterBtn.style('font-size', '30px');
   shutterBtn.style('cursor', 'pointer');
   shutterBtn.style('box-shadow', '0 4px 10px rgba(0,0,0,0.2)');
+  shutterBtn.style('outline', 'none');
 }
 
 function windowResized() {
