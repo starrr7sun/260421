@@ -1,6 +1,7 @@
 let capture;
 let isLoaded = false;
 let bubbles = [];
+let shutterBtn;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -15,11 +16,34 @@ function setup() {
   
   capture.elt.setAttribute('playsinline', '');
   capture.hide();
+
+  // 建立相機快門鍵按鈕
+  shutterBtn = createButton('');
+  shutterBtn.mousePressed(takePhoto);
+  styleButton();
+}
+
+function styleButton() {
+  // 根據當前視窗大小計算按鈕位置（視訊畫面下方）
+  let vHeight = height * 0.6;
+  let btnSize = 70;
+  let x = width / 2 - btnSize / 2;
+  let y = height / 2 + vHeight / 2 + 30;
+
+  shutterBtn.position(x, y);
+  shutterBtn.size(btnSize, btnSize);
+  // 設定快門鍵外觀：白色圓形、灰色粗邊框
+  shutterBtn.style('background-color', 'white');
+  shutterBtn.style('border', '6px solid rgba(150, 150, 150, 0.5)');
+  shutterBtn.style('border-radius', '50%');
+  shutterBtn.style('cursor', 'pointer');
+  shutterBtn.style('box-shadow', '0 4px 10px rgba(0,0,0,0.2)');
 }
 
 function windowResized() {
   // 當手機轉向或視窗大小改變時，重新調整畫布大小
   resizeCanvas(windowWidth, windowHeight);
+  styleButton(); // 重新計算按鈕位置
 }
 
 function mousePressed() {
@@ -27,6 +51,11 @@ function mousePressed() {
   if (capture) {
     capture.play();
   }
+}
+
+function takePhoto() {
+  // 擷取目前的畫布內容並儲存為 jpg
+  saveCanvas('my_mosaic_capture', 'jpg');
 }
 
 function draw() {
