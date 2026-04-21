@@ -2,6 +2,7 @@ let capture;
 let isLoaded = false;
 let bubbles = [];
 let shutterBtn;
+let flashCounter = 0; // 用於拍照閃光效果
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -28,13 +29,16 @@ function styleButton() {
   let vHeight = height * 0.6;
   let btnSize = 70;
   let x = width / 2 - btnSize / 2;
-  let y = height / 2 + vHeight / 2 + 30;
+  // 確保按鈕在視訊下方，且不超出螢幕底部
+  let y = min(height / 2 + vHeight / 2 + 40, height - 100);
 
   shutterBtn.position(x, y);
   shutterBtn.size(btnSize, btnSize);
   // 設定快門鍵外觀：白色圓形、灰色粗邊框
+  shutterBtn.style('display', 'block');
+  shutterBtn.style('z-index', '9999'); // 強制顯示在最上層
   shutterBtn.style('background-color', 'white');
-  shutterBtn.style('border', '6px solid rgba(150, 150, 150, 0.5)');
+  shutterBtn.style('border', '8px solid rgba(200, 200, 200, 0.6)');
   shutterBtn.style('border-radius', '50%');
   shutterBtn.style('cursor', 'pointer');
   shutterBtn.style('box-shadow', '0 4px 10px rgba(0,0,0,0.2)');
@@ -55,6 +59,7 @@ function mousePressed() {
 
 function takePhoto() {
   // 擷取目前的畫布內容並儲存為 jpg
+  flashCounter = 10; // 啟動閃光效果（持續 10 幀）
   saveCanvas('my_mosaic_capture', 'jpg');
 }
 
@@ -122,6 +127,14 @@ function draw() {
       if (b.y < -vHeight / 2 - 50) bubbles.splice(i, 1);
     }
     pop();
+
+    // 拍照閃光效果處理
+    if (flashCounter > 0) {
+      fill(255, flashCounter * 25); // 根據剩餘幀數設定透明度
+      noStroke();
+      rect(0, 0, width, height);
+      flashCounter--;
+    }
   } else {
     // 已移除提示文字
   }
