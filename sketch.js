@@ -132,6 +132,17 @@ function draw() {
     }
     pop();
 
+    // 3. 在右上角顯示一個即時彩色小預覽
+    // 這能讓使用者在看到馬賽克特效的同時，也能預覽真實的拍照構圖與光線
+    let pw = 160; // 預覽視窗寬度
+    let ph = (pw * capture.height) / capture.width; // 依比例計算高度
+    push();
+    // 將預覽視窗放在右上角，並同步水平鏡像翻轉
+    translate(width - 20, 20);
+    scale(-1, 1);
+    image(capture, 0, 0, pw, ph);
+    pop();
+
     // 拍照閃光效果處理
     if (flashCounter > 0) {
       fill(255, flashCounter * 25); // 根據剩餘幀數設定透明度
